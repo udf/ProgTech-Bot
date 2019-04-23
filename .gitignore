@@ -1,1 +1,5 @@
-database.sqlite
+*.sqlite
+config.py
+.vscode
+__pycache__
+*.session

@@ -10,4 +10,4 @@ async def ping_pong(event):
         message = await event.reply("**Pong!**")
         b = datetime.timestamp(datetime.now()) - a
         await u.log(event, f"{b:.3f}")
-await message.edit(f"**Pong!**\nTook `{b:.3f}` seconds")
+    await message.edit(f"**Pong!**\nTook `{b:.3f}` seconds")
