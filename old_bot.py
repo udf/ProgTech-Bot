@@ -91,7 +91,7 @@ async def programming_et_al(message: types.Message):
     await message.chat.set_title(new_title)
 
 
-@dp.message_handler(regexp=r"^/join \S+$")
+@dp.message_handler(regexp=r"^/join @?(\S+)$")
 async def join(message: types.Message):
     group = message.text[6:]
     if group[0] == "@":
