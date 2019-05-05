@@ -7,14 +7,13 @@ import toml
 import re
 
 
-events.OnCommand(prefix=("!!", "/" "." "#"), command=("kick", "kicc"))
-
 help_text = """I mean, if you really wanted to know :/
 
 `/help` - Nah, you figured this one out
 `/join groupname` - join the group :o
 `/leave groupname` - exercise for reader
-`/groups` - lists available groups"""
+`/groups` - lists available groups
+`/addgroup grouptag Membersname` - create a new group with eg switch_peeps, Switcheroos"""
 
 
 with open("groups.json") as f:
@@ -91,7 +90,7 @@ async def programming_et_al(message: types.Message):
     await message.chat.set_title(new_title)
 
 
-@dp.message_handler(regexp=r"^/join @?(\S+)$")
+@dp.message_handler(regexp=r"^/join \S+$")
 async def join(message: types.Message):
     group = message.text[6:]
     if group[0] == "@":
@@ -144,7 +143,7 @@ async def list(message: types.Message):
         return_text = f"{groups[group].__name__}s:\n"
         with db_session:
             for user in groups[group].select():
-                return_text += f" - {user.name}\n"
+                return_text += f" • {user.name}\n"
     else:
         return_text = f"No group found with name {group}"
 
@@ -155,7 +154,7 @@ async def list(message: types.Message):
 
 @dp.message_handler(regexp=r"^/groups")
 async def list_groups(message: types.Message):
-    return_text = "Groups:\n" + "\n".join(f" - {group}" for group in groups) or "None"
+    return_text = "Groups:\n" + "\n".join(f" • {group}" for group in groups) or "None"
 
     await bot.send_message(
         message.chat.id, return_text, reply_to_message_id=message.message_id
@@ -175,12 +174,15 @@ async def add_group(message: types.Message):
     group = args[1]
     if group[0] == "@":
         group = group[1:]
-    member = titlecase(args[2])
+    member = titlecase(' '.join(args[2:]))
 
     if group in groups:
         return_text = f"Group {group} already exists. call `/join {group}` to join"
     else:
         groups_json[group] = member
+
+        with open("groups.json", "w") as outfile:
+            json.dump(groups_json, outfile)
 
         reload_all_db()
 
